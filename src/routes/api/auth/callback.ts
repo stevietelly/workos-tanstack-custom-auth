@@ -1,7 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { handleCallbackRoute } from '@workos/authkit-tanstack-react-start';
-import { getAuthkit } from '@workos/authkit-tanstack-react-start';
-import { workos } from '@/lib/workos';
 
 export const Route = createFileRoute('/api/auth/callback')({
   server: {
@@ -30,61 +28,30 @@ export const Route = createFileRoute('/api/auth/callback')({
         return handleCallbackRoute({
           onError: async ({ error }) => {
             const errorData = error as any;
-            const rawData = errorData.rawData;
 
-            if (rawData?.code === 'organization_selection_required') {
-              const pendingAuthenticationToken =
-                rawData.pending_authentication_token;
-              const firstOrg = rawData.organizations?.[0];
-
-              if (firstOrg && pendingAuthenticationToken) {
-                try {
-                  const authResponse =
-                    await workos.userManagement.authenticateWithOrganizationSelection(
-                      {
-                        pendingAuthenticationToken,
-                        organizationId: firstOrg.id,
-                        clientId: process.env.WORKOS_CLIENT_ID!,
-                        session: {
-                          sealSession: true,
-                          cookiePassword: process.env
-                            .WORKOS_COOKIE_PASSWORD,
-                        },
-                      },
-                    );
-
-                  const sealedSession = (authResponse as any).sealedSession;
-                  if (!sealedSession) {
-                    return new Response(null, {
-                      status: 302,
-                      headers: { Location: '/auth/login' },
-                    });
-                  }
-
-                  const authkit = await getAuthkit();
-                  await authkit.saveSession(undefined, sealedSession);
-
-                  return new Response(null, {
-                    status: 307,
-                    headers: { Location: '/app/account' },
-                  });
-                } catch {
-                  return new Response(null, {
-                    status: 302,
-                    headers: {
-                      Location: '/auth/login',
-                    },
-                  });
-                }
-              }
+            // When the user belongs to multiple organizations, AuthKit can't
+            // finish the code exchange until they pick one. Send them to the
+            // hosted organization-selection screen (AuthKit provides the URL),
+            // which redirects back here once they've chosen — at which point the
+            // callback succeeds. This avoids the brittle "auto-select first org"
+            // flow that throws for multi-org accounts.
+            const authUrl: string | undefined = errorData?.authorizationUrl
+            if (authUrl) {
+              return new Response(null, {
+                status: 307,
+                headers: { Location: authUrl },
+              })
             }
 
+            const loginUrl = new URL('/auth/login', url.origin)
+            loginUrl.searchParams.set(
+              'error',
+              errorData?.message ?? 'Authentication failed',
+            )
             return new Response(null, {
-              status: 302,
-              headers: {
-                Location: `/auth/login?error=${encodeURIComponent('Authentication failed')}`,
-              },
-            });
+              status: 307,
+              headers: { Location: loginUrl.toString() },
+            })
           },
         })({ request });
       },

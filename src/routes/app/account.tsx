@@ -1,68 +1,71 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getAuth } from '@workos/authkit-tanstack-react-start'
+import { useQuery } from '@tanstack/react-query'
+import { Badge } from '#/components/ui/badge'
 
-/**
- * PATTERN 2 — SSR loader
- *
- * `loader` also runs on the server for the initial request and on the client
- * for navigations. The returned value is read with `Route.useLoaderData()`.
- *
- * To demonstrate BOTH patterns on one page:
- *  - `userFromContext` comes from the parent `/app` route's `beforeLoad`
- *    (Pattern 1 — router context, zero extra work).
- *  - `userFromLoader` comes from THIS route's own `loader` (Pattern 2 — SSR
- *    loader, fetched in parallel with the route's other data).
- *
- * In a real app you would pick ONE pattern per route. We show both here so you
- * can see they return the same user object.
- */
 export const Route = createFileRoute('/app/account')({
-  loader: async () => {
-    const auth = await getAuth()
-    return { user: auth.user }
-  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  // Pattern 1: read the user from the parent route's router context.
   const { auth } = Route.useRouteContext()
-  const userFromContext = auth.user
+  const user = auth.user
 
-  // Pattern 2: read the user from this route's own SSR loader.
-  const { user: userFromLoader } = Route.useLoaderData()
+  const { data } = useQuery({
+    queryKey: ['billing'],
+    queryFn: async () => {
+      const res = await fetch('/api/billing/info')
+      if (!res.ok) throw new Error('Failed to load billing info')
+      return res.json()
+    },
+  })
 
   return (
-    <div className="page-wrap px-4 pb-8 pt-14">
-      <section className="island-shell rounded-2xl p-6">
-        <p className="island-kicker mb-2">Account</p>
-        <h1 className="mb-4 text-2xl font-bold text-[var(--sea-ink)]">
-          {userFromContext?.firstName ?? userFromLoader?.firstName
-            ? `${userFromContext?.firstName ?? userFromLoader?.firstName} ${
-                userFromContext?.lastName ?? userFromLoader?.lastName ?? ''
-              }`
+    <div className="mx-auto flex max-w-3xl flex-col gap-6">
+      <div>
+        <p className="island-kicker mb-1">Account</p>
+        <h1 className="display-title text-3xl font-bold text-[var(--ink)]">
+          {user?.firstName || user?.lastName
+            ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
             : 'Welcome'}
         </h1>
+        <p className="mt-1 text-sm text-[var(--ink-soft)]">{user?.email}</p>
+      </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-[var(--line)] p-4">
-            <p className="mb-2 text-sm font-semibold text-[var(--sea-ink)]">
-              From router context
-            </p>
-            <pre className="overflow-auto text-xs text-[var(--sea-ink-soft)]">
-              {JSON.stringify(userFromContext, null, 2)}
-            </pre>
+      {data ? (
+        <section className="island-shell rounded-2xl p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <span className="text-sm text-[var(--ink-soft)]">Plan</span>
+            <Badge variant={data.plan !== 'free' ? 'default' : 'muted'}>
+              {data.plan}
+            </Badge>
+            <Badge variant="outline">{data.planStatus}</Badge>
+            <Badge variant="muted">{data.currency}</Badge>
           </div>
-          <div className="rounded-xl border border-[var(--line)] p-4">
-            <p className="mb-2 text-sm font-semibold text-[var(--sea-ink)]">
-              From SSR loader
-            </p>
-            <pre className="overflow-auto text-xs text-[var(--sea-ink-soft)]">
-              {JSON.stringify(userFromLoader, null, 2)}
-            </pre>
-          </div>
-        </div>
-      </section>
+          <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+            <Stat label="Endpoints" value={String(data.limits.maxEndpoints)} />
+            <Stat
+              label="Req / endpoint"
+              value={data.limits.maxRequestsPerEndpoint.toLocaleString()}
+            />
+            <Stat label="Idle TTL" value={`${data.limits.ttlDays} days`} />
+            <Stat
+              label="Relay timeout"
+              value={`${data.limits.relayTimeoutMs / 1000}s`}
+            />
+          </dl>
+        </section>
+      ) : null}
+    </div>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-[var(--line)] bg-[var(--cream)] p-3">
+      <dt className="text-xs text-[var(--ink-soft)]">{label}</dt>
+      <dd className="mt-0.5 text-base font-semibold text-[var(--ink)]">
+        {value}
+      </dd>
     </div>
   )
 }

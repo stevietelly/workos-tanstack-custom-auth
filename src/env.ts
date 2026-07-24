@@ -4,6 +4,16 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     SERVER_URL: z.string().url().optional(),
+    DATABASE_URL: z.string().url().optional(),
+    WORKOS_API_KEY: z.string().optional(),
+    WORKOS_CLIENT_ID: z.string().optional(),
+    WORKOS_COOKIE_PASSWORD: z.string().optional(),
+    PAYSTACK_SECRET_KEY: z.string().optional(),
+    PAYSTACK_PRO_KES_PLAN: z.string().optional(),
+    PAYSTACK_PRO_USD_PLAN: z.string().optional(),
+    PAYSTACK_ENT_KES_PLAN: z.string().optional(),
+    PAYSTACK_ENT_USD_PLAN: z.string().optional(),
+    CRON_SECRET: z.string().optional(),
   },
 
   /**

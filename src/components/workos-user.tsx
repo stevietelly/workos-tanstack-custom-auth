@@ -17,7 +17,7 @@ export default function WorkOSUserMenu() {
     return (
       <a
         href="/login"
-        className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-4 py-2 text-sm font-semibold text-[var(--lagoon-deep)] no-underline transition hover:bg-[rgba(79,184,178,0.24)]"
+        className="rounded-full border border-[var(--ember-line)] bg-[var(--ember-tint)] px-4 py-2 text-sm font-semibold text-[var(--ember-deep)] no-underline transition hover:bg-[rgba(249,115,22,0.22)]"
       >
         Sign in
       </a>
@@ -34,14 +34,14 @@ export default function WorkOSUserMenu() {
             className="size-8 rounded-full"
           />
         ) : null}
-        <span className="hidden text-sm font-medium text-[var(--sea-ink)] sm:inline">
+        <span className="hidden text-sm font-medium text-[var(--ink)] sm:inline">
           {user.firstName} {user.lastName}
         </span>
       </div>
       <button
         type="button"
         onClick={() => signOut({ returnTo: '/' })}
-        className="rounded-full border border-[var(--line)] px-3 py-1.5 text-sm font-semibold text-[var(--sea-ink-soft)] no-underline transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]"
+        className="rounded-full border border-[var(--line)] px-3 py-1.5 text-sm font-semibold text-[var(--ink-soft)] no-underline transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--ink)]"
       >
         Sign out
       </button>

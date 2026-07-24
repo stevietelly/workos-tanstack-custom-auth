@@ -14,12 +14,33 @@ import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as DemoWorkosRouteImport } from './routes/demo/workos'
+import { Route as BillingCallbackRouteImport } from './routes/billing/callback'
 import { Route as AuthErrorRouteImport } from './routes/auth/error'
+import { Route as AppBillingRouteImport } from './routes/app/billing'
 import { Route as AppAccountRouteImport } from './routes/app/account'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AppEndpointsNewRouteImport } from './routes/app/endpoints/new'
+import { Route as AppEndpointsIdRouteImport } from './routes/app/endpoints/$id'
+import { Route as ApiWebhooksPaystackRouteImport } from './routes/api/webhooks/paystack'
+import { Route as ApiCronCleanupRouteImport } from './routes/api/cron/cleanup'
+import { Route as ApiCbSlugRouteImport } from './routes/api/cb/$slug'
+import { Route as ApiBillingVerifyRouteImport } from './routes/api/billing/verify'
+import { Route as ApiBillingInfoRouteImport } from './routes/api/billing/info'
+import { Route as ApiBillingCheckoutRouteImport } from './routes/api/billing/checkout'
+import { Route as ApiAuthUserRouteImport } from './routes/api/auth/user'
 import { Route as ApiAuthGoogleRouteImport } from './routes/api/auth/google'
 import { Route as ApiAuthCallbackRouteImport } from './routes/api/auth/callback'
+import { Route as ApiAdminUsersRouteImport } from './routes/api/admin/users'
+import { Route as ApiAdminCheckRouteImport } from './routes/api/admin/check'
+import { Route as AdminUsersIdRouteImport } from './routes/admin/users.$id'
+import { Route as ApiAdminUsersIdRouteImport } from './routes/api/admin/users.$id'
+import { Route as ApiAdminUsersIdPlanRouteImport } from './routes/api/admin/users.$id.plan'
+import { Route as ApiAdminUsersIdBanRouteImport } from './routes/api/admin/users.$id.ban'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -46,14 +67,34 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const DemoWorkosRoute = DemoWorkosRouteImport.update({
   id: '/demo/workos',
   path: '/demo/workos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillingCallbackRoute = BillingCallbackRouteImport.update({
+  id: '/billing/callback',
+  path: '/billing/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthErrorRoute = AuthErrorRouteImport.update({
@@ -61,10 +102,65 @@ const AuthErrorRoute = AuthErrorRouteImport.update({
   path: '/auth/error',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppBillingRoute = AppBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAccountRoute = AppAccountRouteImport.update({
   id: '/account',
   path: '/account',
   getParentRoute: () => AppRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AppEndpointsNewRoute = AppEndpointsNewRouteImport.update({
+  id: '/endpoints/new',
+  path: '/endpoints/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEndpointsIdRoute = AppEndpointsIdRouteImport.update({
+  id: '/endpoints/$id',
+  path: '/endpoints/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const ApiWebhooksPaystackRoute = ApiWebhooksPaystackRouteImport.update({
+  id: '/api/webhooks/paystack',
+  path: '/api/webhooks/paystack',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCronCleanupRoute = ApiCronCleanupRouteImport.update({
+  id: '/api/cron/cleanup',
+  path: '/api/cron/cleanup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCbSlugRoute = ApiCbSlugRouteImport.update({
+  id: '/api/cb/$slug',
+  path: '/api/cb/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBillingVerifyRoute = ApiBillingVerifyRouteImport.update({
+  id: '/api/billing/verify',
+  path: '/api/billing/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBillingInfoRoute = ApiBillingInfoRouteImport.update({
+  id: '/api/billing/info',
+  path: '/api/billing/info',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBillingCheckoutRoute = ApiBillingCheckoutRouteImport.update({
+  id: '/api/billing/checkout',
+  path: '/api/billing/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthUserRoute = ApiAuthUserRouteImport.update({
+  id: '/api/auth/user',
+  path: '/api/auth/user',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthGoogleRoute = ApiAuthGoogleRouteImport.update({
   id: '/api/auth/google',
@@ -76,100 +172,263 @@ const ApiAuthCallbackRoute = ApiAuthCallbackRouteImport.update({
   path: '/api/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminUsersRoute = ApiAdminUsersRouteImport.update({
+  id: '/api/admin/users',
+  path: '/api/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminCheckRoute = ApiAdminCheckRouteImport.update({
+  id: '/api/admin/check',
+  path: '/api/admin/check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersIdRoute = AdminUsersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
+const ApiAdminUsersIdRoute = ApiAdminUsersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminUsersRoute,
+} as any)
+const ApiAdminUsersIdPlanRoute = ApiAdminUsersIdPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => ApiAdminUsersIdRoute,
+} as any)
+const ApiAdminUsersIdBanRoute = ApiAdminUsersIdBanRouteImport.update({
+  id: '/ban',
+  path: '/ban',
+  getParentRoute: () => ApiAdminUsersIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/signup': typeof SignupRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/account': typeof AppAccountRoute
+  '/app/billing': typeof AppBillingRoute
   '/auth/error': typeof AuthErrorRoute
+  '/billing/callback': typeof BillingCallbackRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
+  '/admin/users/$id': typeof AdminUsersIdRoute
+  '/api/admin/check': typeof ApiAdminCheckRoute
+  '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/auth/google': typeof ApiAuthGoogleRoute
+  '/api/auth/user': typeof ApiAuthUserRoute
+  '/api/billing/checkout': typeof ApiBillingCheckoutRoute
+  '/api/billing/info': typeof ApiBillingInfoRoute
+  '/api/billing/verify': typeof ApiBillingVerifyRoute
+  '/api/cb/$slug': typeof ApiCbSlugRoute
+  '/api/cron/cleanup': typeof ApiCronCleanupRoute
+  '/api/webhooks/paystack': typeof ApiWebhooksPaystackRoute
+  '/app/endpoints/$id': typeof AppEndpointsIdRoute
+  '/app/endpoints/new': typeof AppEndpointsNewRoute
+  '/api/admin/users/$id': typeof ApiAdminUsersIdRouteWithChildren
+  '/api/admin/users/$id/ban': typeof ApiAdminUsersIdBanRoute
+  '/api/admin/users/$id/plan': typeof ApiAdminUsersIdPlanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/signup': typeof SignupRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/account': typeof AppAccountRoute
+  '/app/billing': typeof AppBillingRoute
   '/auth/error': typeof AuthErrorRoute
+  '/billing/callback': typeof BillingCallbackRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/admin': typeof AdminIndexRoute
+  '/app': typeof AppIndexRoute
+  '/admin/users/$id': typeof AdminUsersIdRoute
+  '/api/admin/check': typeof ApiAdminCheckRoute
+  '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/auth/google': typeof ApiAuthGoogleRoute
+  '/api/auth/user': typeof ApiAuthUserRoute
+  '/api/billing/checkout': typeof ApiBillingCheckoutRoute
+  '/api/billing/info': typeof ApiBillingInfoRoute
+  '/api/billing/verify': typeof ApiBillingVerifyRoute
+  '/api/cb/$slug': typeof ApiCbSlugRoute
+  '/api/cron/cleanup': typeof ApiCronCleanupRoute
+  '/api/webhooks/paystack': typeof ApiWebhooksPaystackRoute
+  '/app/endpoints/$id': typeof AppEndpointsIdRoute
+  '/app/endpoints/new': typeof AppEndpointsNewRoute
+  '/api/admin/users/$id': typeof ApiAdminUsersIdRouteWithChildren
+  '/api/admin/users/$id/ban': typeof ApiAdminUsersIdBanRoute
+  '/api/admin/users/$id/plan': typeof ApiAdminUsersIdPlanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/signup': typeof SignupRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/account': typeof AppAccountRoute
+  '/app/billing': typeof AppBillingRoute
   '/auth/error': typeof AuthErrorRoute
+  '/billing/callback': typeof BillingCallbackRoute
   '/demo/workos': typeof DemoWorkosRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
+  '/admin/users/$id': typeof AdminUsersIdRoute
+  '/api/admin/check': typeof ApiAdminCheckRoute
+  '/api/admin/users': typeof ApiAdminUsersRouteWithChildren
   '/api/auth/callback': typeof ApiAuthCallbackRoute
   '/api/auth/google': typeof ApiAuthGoogleRoute
+  '/api/auth/user': typeof ApiAuthUserRoute
+  '/api/billing/checkout': typeof ApiBillingCheckoutRoute
+  '/api/billing/info': typeof ApiBillingInfoRoute
+  '/api/billing/verify': typeof ApiBillingVerifyRoute
+  '/api/cb/$slug': typeof ApiCbSlugRoute
+  '/api/cron/cleanup': typeof ApiCronCleanupRoute
+  '/api/webhooks/paystack': typeof ApiWebhooksPaystackRoute
+  '/app/endpoints/$id': typeof AppEndpointsIdRoute
+  '/app/endpoints/new': typeof AppEndpointsNewRoute
+  '/api/admin/users/$id': typeof ApiAdminUsersIdRouteWithChildren
+  '/api/admin/users/$id/ban': typeof ApiAdminUsersIdBanRoute
+  '/api/admin/users/$id/plan': typeof ApiAdminUsersIdPlanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/about'
     | '/app'
     | '/login'
     | '/logout'
     | '/signup'
+    | '/admin/users'
     | '/app/account'
+    | '/app/billing'
     | '/auth/error'
+    | '/billing/callback'
     | '/demo/workos'
+    | '/admin/'
+    | '/app/'
+    | '/admin/users/$id'
+    | '/api/admin/check'
+    | '/api/admin/users'
     | '/api/auth/callback'
     | '/api/auth/google'
+    | '/api/auth/user'
+    | '/api/billing/checkout'
+    | '/api/billing/info'
+    | '/api/billing/verify'
+    | '/api/cb/$slug'
+    | '/api/cron/cleanup'
+    | '/api/webhooks/paystack'
+    | '/app/endpoints/$id'
+    | '/app/endpoints/new'
+    | '/api/admin/users/$id'
+    | '/api/admin/users/$id/ban'
+    | '/api/admin/users/$id/plan'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/app'
     | '/login'
     | '/logout'
     | '/signup'
+    | '/admin/users'
     | '/app/account'
+    | '/app/billing'
     | '/auth/error'
+    | '/billing/callback'
     | '/demo/workos'
+    | '/admin'
+    | '/app'
+    | '/admin/users/$id'
+    | '/api/admin/check'
+    | '/api/admin/users'
     | '/api/auth/callback'
     | '/api/auth/google'
+    | '/api/auth/user'
+    | '/api/billing/checkout'
+    | '/api/billing/info'
+    | '/api/billing/verify'
+    | '/api/cb/$slug'
+    | '/api/cron/cleanup'
+    | '/api/webhooks/paystack'
+    | '/app/endpoints/$id'
+    | '/app/endpoints/new'
+    | '/api/admin/users/$id'
+    | '/api/admin/users/$id/ban'
+    | '/api/admin/users/$id/plan'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/about'
     | '/app'
     | '/login'
     | '/logout'
     | '/signup'
+    | '/admin/users'
     | '/app/account'
+    | '/app/billing'
     | '/auth/error'
+    | '/billing/callback'
     | '/demo/workos'
+    | '/admin/'
+    | '/app/'
+    | '/admin/users/$id'
+    | '/api/admin/check'
+    | '/api/admin/users'
     | '/api/auth/callback'
     | '/api/auth/google'
+    | '/api/auth/user'
+    | '/api/billing/checkout'
+    | '/api/billing/info'
+    | '/api/billing/verify'
+    | '/api/cb/$slug'
+    | '/api/cron/cleanup'
+    | '/api/webhooks/paystack'
+    | '/app/endpoints/$id'
+    | '/app/endpoints/new'
+    | '/api/admin/users/$id'
+    | '/api/admin/users/$id/ban'
+    | '/api/admin/users/$id/plan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   SignupRoute: typeof SignupRoute
   AuthErrorRoute: typeof AuthErrorRoute
+  BillingCallbackRoute: typeof BillingCallbackRoute
   DemoWorkosRoute: typeof DemoWorkosRoute
+  ApiAdminCheckRoute: typeof ApiAdminCheckRoute
+  ApiAdminUsersRoute: typeof ApiAdminUsersRouteWithChildren
   ApiAuthCallbackRoute: typeof ApiAuthCallbackRoute
   ApiAuthGoogleRoute: typeof ApiAuthGoogleRoute
+  ApiAuthUserRoute: typeof ApiAuthUserRoute
+  ApiBillingCheckoutRoute: typeof ApiBillingCheckoutRoute
+  ApiBillingInfoRoute: typeof ApiBillingInfoRoute
+  ApiBillingVerifyRoute: typeof ApiBillingVerifyRoute
+  ApiCbSlugRoute: typeof ApiCbSlugRoute
+  ApiCronCleanupRoute: typeof ApiCronCleanupRoute
+  ApiWebhooksPaystackRoute: typeof ApiWebhooksPaystackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -209,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -216,11 +482,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/demo/workos': {
       id: '/demo/workos'
       path: '/demo/workos'
       fullPath: '/demo/workos'
       preLoaderRoute: typeof DemoWorkosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing/callback': {
+      id: '/billing/callback'
+      path: '/billing/callback'
+      fullPath: '/billing/callback'
+      preLoaderRoute: typeof BillingCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/error': {
@@ -230,12 +517,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthErrorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/billing': {
+      id: '/app/billing'
+      path: '/billing'
+      fullPath: '/app/billing'
+      preLoaderRoute: typeof AppBillingRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/account': {
       id: '/app/account'
       path: '/account'
       fullPath: '/app/account'
       preLoaderRoute: typeof AppAccountRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/app/endpoints/new': {
+      id: '/app/endpoints/new'
+      path: '/endpoints/new'
+      fullPath: '/app/endpoints/new'
+      preLoaderRoute: typeof AppEndpointsNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/endpoints/$id': {
+      id: '/app/endpoints/$id'
+      path: '/endpoints/$id'
+      fullPath: '/app/endpoints/$id'
+      preLoaderRoute: typeof AppEndpointsIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/api/webhooks/paystack': {
+      id: '/api/webhooks/paystack'
+      path: '/api/webhooks/paystack'
+      fullPath: '/api/webhooks/paystack'
+      preLoaderRoute: typeof ApiWebhooksPaystackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cron/cleanup': {
+      id: '/api/cron/cleanup'
+      path: '/api/cron/cleanup'
+      fullPath: '/api/cron/cleanup'
+      preLoaderRoute: typeof ApiCronCleanupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cb/$slug': {
+      id: '/api/cb/$slug'
+      path: '/api/cb/$slug'
+      fullPath: '/api/cb/$slug'
+      preLoaderRoute: typeof ApiCbSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/billing/verify': {
+      id: '/api/billing/verify'
+      path: '/api/billing/verify'
+      fullPath: '/api/billing/verify'
+      preLoaderRoute: typeof ApiBillingVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/billing/info': {
+      id: '/api/billing/info'
+      path: '/api/billing/info'
+      fullPath: '/api/billing/info'
+      preLoaderRoute: typeof ApiBillingInfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/billing/checkout': {
+      id: '/api/billing/checkout'
+      path: '/api/billing/checkout'
+      fullPath: '/api/billing/checkout'
+      preLoaderRoute: typeof ApiBillingCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/user': {
+      id: '/api/auth/user'
+      path: '/api/auth/user'
+      fullPath: '/api/auth/user'
+      preLoaderRoute: typeof ApiAuthUserRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/google': {
       id: '/api/auth/google'
@@ -251,30 +615,143 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/users': {
+      id: '/api/admin/users'
+      path: '/api/admin/users'
+      fullPath: '/api/admin/users'
+      preLoaderRoute: typeof ApiAdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/check': {
+      id: '/api/admin/check'
+      path: '/api/admin/check'
+      fullPath: '/api/admin/check'
+      preLoaderRoute: typeof ApiAdminCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users/$id': {
+      id: '/admin/users/$id'
+      path: '/$id'
+      fullPath: '/admin/users/$id'
+      preLoaderRoute: typeof AdminUsersIdRouteImport
+      parentRoute: typeof AdminUsersRoute
+    }
+    '/api/admin/users/$id': {
+      id: '/api/admin/users/$id'
+      path: '/$id'
+      fullPath: '/api/admin/users/$id'
+      preLoaderRoute: typeof ApiAdminUsersIdRouteImport
+      parentRoute: typeof ApiAdminUsersRoute
+    }
+    '/api/admin/users/$id/plan': {
+      id: '/api/admin/users/$id/plan'
+      path: '/plan'
+      fullPath: '/api/admin/users/$id/plan'
+      preLoaderRoute: typeof ApiAdminUsersIdPlanRouteImport
+      parentRoute: typeof ApiAdminUsersIdRoute
+    }
+    '/api/admin/users/$id/ban': {
+      id: '/api/admin/users/$id/ban'
+      path: '/ban'
+      fullPath: '/api/admin/users/$id/ban'
+      preLoaderRoute: typeof ApiAdminUsersIdBanRouteImport
+      parentRoute: typeof ApiAdminUsersIdRoute
+    }
   }
 }
 
+interface AdminUsersRouteChildren {
+  AdminUsersIdRoute: typeof AdminUsersIdRoute
+}
+
+const AdminUsersRouteChildren: AdminUsersRouteChildren = {
+  AdminUsersIdRoute: AdminUsersIdRoute,
+}
+
+const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
+  AdminUsersRouteChildren,
+)
+
+interface AdminRouteRouteChildren {
+  AdminUsersRoute: typeof AdminUsersRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminUsersRoute: AdminUsersRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 interface AppRouteChildren {
   AppAccountRoute: typeof AppAccountRoute
+  AppBillingRoute: typeof AppBillingRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppEndpointsIdRoute: typeof AppEndpointsIdRoute
+  AppEndpointsNewRoute: typeof AppEndpointsNewRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAccountRoute: AppAccountRoute,
+  AppBillingRoute: AppBillingRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppEndpointsIdRoute: AppEndpointsIdRoute,
+  AppEndpointsNewRoute: AppEndpointsNewRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
+interface ApiAdminUsersIdRouteChildren {
+  ApiAdminUsersIdBanRoute: typeof ApiAdminUsersIdBanRoute
+  ApiAdminUsersIdPlanRoute: typeof ApiAdminUsersIdPlanRoute
+}
+
+const ApiAdminUsersIdRouteChildren: ApiAdminUsersIdRouteChildren = {
+  ApiAdminUsersIdBanRoute: ApiAdminUsersIdBanRoute,
+  ApiAdminUsersIdPlanRoute: ApiAdminUsersIdPlanRoute,
+}
+
+const ApiAdminUsersIdRouteWithChildren = ApiAdminUsersIdRoute._addFileChildren(
+  ApiAdminUsersIdRouteChildren,
+)
+
+interface ApiAdminUsersRouteChildren {
+  ApiAdminUsersIdRoute: typeof ApiAdminUsersIdRouteWithChildren
+}
+
+const ApiAdminUsersRouteChildren: ApiAdminUsersRouteChildren = {
+  ApiAdminUsersIdRoute: ApiAdminUsersIdRouteWithChildren,
+}
+
+const ApiAdminUsersRouteWithChildren = ApiAdminUsersRoute._addFileChildren(
+  ApiAdminUsersRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   SignupRoute: SignupRoute,
   AuthErrorRoute: AuthErrorRoute,
+  BillingCallbackRoute: BillingCallbackRoute,
   DemoWorkosRoute: DemoWorkosRoute,
+  ApiAdminCheckRoute: ApiAdminCheckRoute,
+  ApiAdminUsersRoute: ApiAdminUsersRouteWithChildren,
   ApiAuthCallbackRoute: ApiAuthCallbackRoute,
   ApiAuthGoogleRoute: ApiAuthGoogleRoute,
+  ApiAuthUserRoute: ApiAuthUserRoute,
+  ApiBillingCheckoutRoute: ApiBillingCheckoutRoute,
+  ApiBillingInfoRoute: ApiBillingInfoRoute,
+  ApiBillingVerifyRoute: ApiBillingVerifyRoute,
+  ApiCbSlugRoute: ApiCbSlugRoute,
+  ApiCronCleanupRoute: ApiCronCleanupRoute,
+  ApiWebhooksPaystackRoute: ApiWebhooksPaystackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

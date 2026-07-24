@@ -1,86 +1,98 @@
-Welcome to your new TanStack Start app! 
+# geliana hooks — Managed Callback URLs as a Service
 
-# Getting Started
+A self-hosted webhook inbox + configurable mock endpoint service. Built entirely
+on TanStack (Start, Router, Query, Table, Form), CockroachDB via Drizzle,
+WorkOS for auth, and Paystack for billing (KES + USD).
 
-To run this application:
+## How it works
 
-```bash
-bun install
-bun --bun run dev
+Each user creates **endpoints** — unique URLs like `/cb/<slug>`. When an
+external service hits that URL (GET/POST/etc), Hookr:
+
+1. Logs the full request (headers, body, query params, IP)
+2. Optionally **relays** it to a target URL and captures the response
+3. Either returns a configured static response (`respond` mode), the relay's
+   response verbatim (`relay_passthrough`), or a simple capture ack
+   (`capture` mode)
+4. Updates the endpoint's TTL based on `last_used_at` + the user's plan
+
+Endpoints with no traffic get cleaned up automatically:
+- **Free plan**: 3 days
+- **Pro / Enterprise**: 60 days
+
+## Stack
+
+| Concern | Tool |
+|---|---|
+| Framework | TanStack Start |
+| Routing | TanStack Router (file-based) |
+| Data fetching | TanStack Query (polling, no websockets) |
+| Tables | TanStack Table |
+| Forms | TanStack Form |
+| Database | CockroachDB (via `postgres` driver + Drizzle ORM) |
+| Auth | WorkOS (fully custom UI, AuthKit under the hood) |
+| Billing | Paystack (KES + USD subscriptions) |
+
+## Project structure
+
+```
+app/
+  routes/
+    _auth/                  ← login/register (unauthenticated layout)
+      auth.login.tsx
+      auth.register.tsx
+    _app.tsx                ← authenticated layout (sidebar, nav)
+    _app/
+      dashboard.tsx
+      endpoints.new.tsx
+      endpoints.$id.tsx
+      billing.tsx
+    auth.callback.tsx       ← WorkOS OAuth callback → user upsert
+    auth.logout.tsx
+    billing.callback.tsx    ← Paystack redirect-back handler
+    api/
+      cb.$slug.ts           ← THE callback handler (all HTTP methods)
+      webhooks/paystack.ts  ← Paystack subscription webhooks
+      cron/cleanup.ts       ← TTL sweep, hit by external scheduler
+  server/
+    db/
+      schema.ts             ← Drizzle schema (users, endpoints, requests)
+      index.ts               ← CockroachDB client
+    lib/
+      auth.ts               ← WorkOS session + user upsert
+    functions/
+      endpoints.ts          ← CRUD server functions
+      callback.ts           ← core log/relay/respond logic
+      billing.ts            ← Paystack checkout + webhook processing
+      cleanup.ts            ← TTL cleanup logic
+  styles/globals.css
 ```
 
-# Building For Production
+## Setup
 
-To build this application for production:
-
-```bash
-bun --bun run build
-```
-
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+### 1. Install dependencies
 
 ```bash
-bun --bun run test
+npm install
 ```
 
-## Styling
+### 2. Environment variables
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+Copy `.env.example` to `.env` and fill in:
 
-### Removing Tailwind CSS
+- `DATABASE_URL` — CockroachDB connection string
+- `WORKOS_*` — from your WorkOS dashboard (AuthKit enabled, custom redirect URI)
+- `PAYSTACK_*` — secret/public keys + plan codes for Pro/Enterprise in both KES and USD
+- `CRON_SECRET` — random string, used to protect `/api/cron/cleanup`
 
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `bun install @tailwindcss/vite tailwindcss -D`
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
+### 3. Database migrations
 
 ```bash
-bun --bun run lint
-bun --bun run format
-bun --bun run check
+npm run db:generate   # generate SQL from schema.ts
+npm run db:migrate    # apply to CockroachDB
 ```
 
-
-## Deploy to Cloudflare Workers
-
-This project uses the Cloudflare Vite plugin (configured in `vite.config.ts`) and `wrangler.jsonc`:
-
-1. Install Wrangler: `npm install -g wrangler`
-2. Authenticate: `wrangler login`
-3. Deploy: `npx wrangler deploy`
-
-For production env vars, run `wrangler secret put MY_VAR` for each secret listed in `.env.example`. Public (non-secret) vars go in `wrangler.jsonc` under `vars`.
-
-KV, D1, R2, and Durable Object bindings are configured in `wrangler.jsonc` — see https://developers.cloudflare.com/workers/wrangler/configuration/.
-
-
-## Setting up WorkOS
-
-1. Copy `.env.example` to `.env.local` and fill in your WorkOS credentials from the [WorkOS dashboard](https://dashboard.workos.com):
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   | Variable | Where it's used | Notes |
-   |---|---|---|
-   | `WORKOS_API_KEY` | server | Secret API key (`sk_test_...`). Never exposed to the client. |
-   | `WORKOS_CLIENT_ID` | server + client | Used by AuthKit middleware and the client provider. |
-   | `WORKOS_COOKIE_PASSWORD` | server | **Must be ≥ 32 chars.** Used to seal the session cookie. |
-   | `WORKOS_REDIRECT_URI` | server | Optional. Defaults to `http://<host>/api/auth/callback`. |
-   | `VITE_WORKOS_CLIENT_ID` | client | Same client ID, exposed to the browser (required `VITE_` prefix). |
-   | `VITE_WORKOS_API_HOSTNAME` | client | Usually `api.workos.com`. |
-
-2. In the WorkOS dashboard, set the **Redirect** URI to `http://localhost:3000/api/auth/callback` (or your deployed equivalent).
+### 4. WorkOS setup
 
 ### How the integration is wired
 
@@ -150,182 +162,45 @@ Use this when a single route needs its own data fetched in parallel with the rou
 - **Route** (`src/routes/logout.tsx`): `await signOut()` inside a loader (redirects to the AuthKit logout URL).
 
 
-## Shadcn
+### 5. Paystack setup
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+- Create two plans per tier (Pro, Enterprise) — one in KES, one in USD
+- Set plan codes in `.env`
+- Add webhook URL in Paystack dashboard: `https://yourdomain.com/api/webhooks/paystack`
+- Events needed: `subscription.create`, `invoice.payment_success`,
+  `invoice.payment_failed`, `subscription.disable`
+
+### 6. Cleanup cron
+
+Point an external scheduler (cron-job.org, Render Cron, GitHub Actions, etc.)
+at:
+
+```
+GET https://yourdomain.com/api/cron/cleanup
+Header: x-cron-secret: <CRON_SECRET>
+```
+
+Run hourly. It deletes endpoints (and cascades to requests) where
+`expires_at < NOW()`.
+
+### 7. Run
 
 ```bash
-pnpm dlx shadcn@latest add button
+npm run dev
 ```
 
+## Key design notes
 
-## T3Env
-
-- You can use T3Env to add type safety to your environment variables.
-- Add Environment variables to the `src/env.mjs` file.
-- Use the environment variables in your code.
-
-### Usage
-
-```ts
-import { env } from "#/env";
-
-console.log(env.VITE_APP_TITLE);
-```
-
-
-
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+- **TTL is rolling, not fixed**: every hit to `/cb/<slug>` resets
+  `expires_at = now() + plan_ttl_days`. Inactive endpoints expire; active ones
+  never do.
+- **Relay timeout** is plan-gated (5s free / 15s pro / 30s enterprise) to
+  avoid free-tier abuse holding connections open.
+- **Sensitive headers** (`authorization`, `cookie`, etc.) are stripped before
+  storing request logs.
+- **Rolling request limit**: when a free-tier endpoint exceeds 500 stored
+  requests, the oldest is deleted to make room for the newest — no manual
+  cleanup needed.
+- **User sync**: every authenticated request calls `upsertUser()`, so a local
+  `users` row always exists for billing/plan data, even for users who signed
+  up before this table existed.
